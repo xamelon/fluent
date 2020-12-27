@@ -1,6 +1,6 @@
-library hehe;
+library fluent;
 
-import 'package:hehe/path.dart';
+import './path.dart';
 
 extension MapHelper on Map {
   dynamic getIn(String path) {
@@ -59,5 +59,22 @@ extension MapHelper on Map {
       }
       rootMap = rootMap[k];
     }
+  }
+
+  List<String> findAllPaths([String rootPath = null]) {
+    List<String> allPaths = [];
+    
+    this.forEach((k, v) {
+        String path = k;
+        if(rootPath != null) {
+          path = rootPath + "/" + k;
+        }
+        allPaths.add(path);
+        if(v is Map) {
+          allPaths.addAll(v.findAllPaths(k));
+        }
+    });
+
+    return allPaths;
   }
 }

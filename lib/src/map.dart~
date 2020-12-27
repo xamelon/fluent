@@ -61,7 +61,7 @@ extension MapHelper on Map {
     }
   }
 
-  List<String> findAllPathsInMap([String rootPath = null]) {
+  List<String> findAllPaths([String rootPath = null]) {
     List<String> allPaths = [];
     
     this.forEach((k, v) {
@@ -71,7 +71,7 @@ extension MapHelper on Map {
         }
         allPaths.add(path);
         if(v is Map) {
-          allPaths.addAll(v.findAllPathsInMap(k));
+          allPaths.addAll(v.findAllPaths(k));
         }
     });
 

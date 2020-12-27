@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:fluent/map.dart';
+import 'package:fluent/fluent.dart';
 
 void main() {
   test("get in path", () {
@@ -48,11 +48,11 @@ void main() {
   test("find all paths in map", () {
       Map<String, dynamic> someMap = {"path": "value"};
 
-      List<String> allPaths = someMap.findAllPathsInMap();
+      List<String> allPaths = someMap.findAllPaths();
       expect(allPaths, ["path"]);
 
       someMap = {"path": "value", "subPath": {"subVal": "value"}};
-      allPaths = someMap.findAllPathsInMap();
+      allPaths = someMap.findAllPaths();
       
       expect(allPaths, ["path", "subPath", "subPath/subVal"]);
   });
