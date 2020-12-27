@@ -1,0 +1,24 @@
+import 'package:flutter_test/flutter_test.dart';
+
+import 'package:hehe/hehe.dart';
+import 'package:hehe/map.dart';
+
+void main() {
+  test("Add event effect", () {
+    Hehe hehe = new Hehe();
+
+    hehe.state.addIn("DeliveryPayment/User/Name", "Stas");
+
+    hehe.regEffect(
+        "DeliveryPayment/User/NameChanged", ["DeliveryPayment/User/Name"], (
+            [oldLastName, firstName, lastName]) {
+      expect(oldLastName, "Stas");
+      return {}..addIn("DeliveryPayment/User/Name", firstName);
+    });
+
+    expect(hehe.effects.containsKey("DeliveryPayment/User/NameChanged"), true);
+
+    hehe.dispatch("DeliveryPayment/User/NameChanged", ["Anton", "Buldakov"]);
+    expect(hehe.state.getIn("DeliveryPayment/User/Name"), "Anton");
+  });
+}

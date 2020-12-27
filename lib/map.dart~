@@ -1,0 +1,63 @@
+library hehe;
+
+import 'package:hehe/path.dart';
+
+extension MapHelper on Map {
+  dynamic getIn(String path) {
+    List<String> paths = PathHelper.extractPath(path);
+
+    return paths.fold(this, (pr, e) {
+      if (pr is Map) {
+        return pr[e];
+      } else {
+        return null;
+      }
+    });
+  }
+
+  void addIn(String path, dynamic value) {
+    List<String> paths = PathHelper.extractPath(path);
+
+    //"momo/test"
+    //[momo][test]
+    Map rootMap = findMapInKey(path);
+    rootMap[paths.last] = value;
+  }
+
+  void removeIn(String path) {
+    List<String> paths = PathHelper.extractPath(path);
+
+    Map rootMap = findMapInKey(path);
+    rootMap.remove(paths.last);
+
+    rootMap = this;
+    for (int i = 0; i < paths.length - 1; i++) {
+      String key = paths[i];
+      if (!rootMap.containsKey(key)) return;
+      if (rootMap.containsKey(key) &&
+          rootMap[key] is Map &&
+          rootMap[key].isEmpty) {
+        rootMap.remove(key);
+        return;
+      }
+
+      rootMap = rootMap[key];
+    }
+  }
+
+  Map findMapInKey(String path) {
+    List<String> paths = PathHelper.extractPath(path);
+
+    Map<dynamic, dynamic> rootMap = this;
+    for (int i = 0; i < paths.length; i++) {
+      dynamic k = paths[i];
+      if (!rootMap.containsKey(k) && i < paths.length - 1) {
+        rootMap[k] = new Map();
+      } else if (i == paths.length - 1) {
+        return rootMap;
+        break;
+      }
+      rootMap = rootMap[k];
+    }
+  }
+}

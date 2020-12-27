@@ -1,9 +1,9 @@
 library fluent;
 
-import 'package:fluent/mapping.dart';
-import 'package:fluent/map.dart';
+import 'package:hehe/mapping.dart';
+import 'package:hehe/map.dart';
 
-class Fluent {
+class Hehe {
   Map<String, dynamic> state = {};
 
   Map<String, List<Mapping>> effects = {};
@@ -20,7 +20,6 @@ class Fluent {
 
       print("Diff map: $diffMap");
       state.addAll(diffMap);
-      
     });
   }
 
@@ -32,11 +31,4 @@ class Fluent {
       effects[eventName] = List<Mapping>()..add(Mapping(args, handler));
     }
   }
-
-  void regSub(String path, Stream stream) {
-    
-  }
-
-  
-  
 }

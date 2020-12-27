@@ -10,16 +10,15 @@ void main() {
     fluent.state.addIn("DeliveryPayment/User/Name", "Stas");
 
     fluent.regEffect(
-      "DeliveryPayment/User/NameChanged",
-      ["DeliveryPayment/User/Name"],
-      ([oldLastName, firstName, lastName]) {
+        "DeliveryPayment/User/NameChanged", ["DeliveryPayment/User/Name"], (
+            [oldLastName, firstName, lastName]) {
       expect(oldLastName, "Stas");
       return {}..addIn("DeliveryPayment/User/Name", firstName);
     });
 
-    expect(fluent.effects.containsKey("DeliveryPayment/User/NameChanged"), true);
+    expect(hehe.effects.containsKey("DeliveryPayment/User/NameChanged"), true);
 
     fluent.dispatch("DeliveryPayment/User/NameChanged", ["Anton", "Buldakov"]);
-    expect(fluent.state.getIn("DeliveryPayment/User/Name"), "Anton");
+    expect(hehe.state.getIn("DeliveryPayment/User/Name"), "Anton");
   });
 }
