@@ -6,50 +6,67 @@ import './mapping.dart';
 import './map.dart';
 
 class Fluent {
+
+  static final Fluent fluent = Fluent._();
+  
+  Fluent._();
+
+  bool saveHistory = true;
+  
   Map<String, dynamic> state = {};
 
-  Map<String, List<Mapping>> effects = {};
+  Map<String, List<Mapping>> _effects = {};
 
-  Map<String, StreamController> subs = {};
+  Map<String, StreamController> _subs = {};
 
-  void dispatch(String eventName, List args) {
-    List<Mapping> mappings = effects[eventName];
+  List<Map<String, Map>> hx = List.empty(growable: true);
+  
+  static void dispatch(String eventName, List args) {
+    List<Mapping> mappings = fluent._effects[eventName];
+    if(mappings == null) {
+      return;
+    }
     mappings.forEach((m) {
-        List<dynamic> handlerArgs = m.args.map((a) => state.getIn(a)).toList()
+        List<dynamic> handlerArgs = m.args.map((a) {
+            return fluent.state.getIn(a);
+        }).toList()
         ..addAll(args);
         Map diffMap = Function.apply(m.handler, handlerArgs);
-        
-        state.addAll(diffMap);
+        fluent.state.addAll(diffMap);
         List<String> allPaths = diffMap.findAllPaths();
-        List changedKeys = allPaths.where((el) => subs.containsKey(el)).toList();
-        print("changed keys: $changedKeys");
+        
+        List changedKeys = allPaths.where((el) => fluent._subs.containsKey(el)).toList();
         changedKeys.forEach((el) {
-            StreamController ctrl = subs[el];
+            StreamController ctrl = fluent._subs[el];
             var val = diffMap.getIn(el);
             ctrl.add(val);
         });
+
+        if(fluent.saveHistory) {
+          fluent.hx.add({eventName: diffMap});
+        }
     });
   }
-
-  void regEffect(String eventName, List<String> args,
+  
+  static void regEffect(String eventName, List<String> args,
       Map<String, dynamic> Function([dynamic args]) handler) {
-    if (effects.containsKey(eventName)) {
-      effects[eventName].add(Mapping(args, handler));
+    if (fluent._effects.containsKey(eventName)) {
+      fluent._effects[eventName].add(Mapping(args, handler));
     } else {
-      effects[eventName] = List<Mapping>()..add(Mapping(args, handler));
+      fluent._effects[eventName] = List<Mapping>()..add(Mapping(args, handler));
     }
   }
 
-  Stream regSub(String path) {
-    StreamController controller = subs[path];
+  static Stream regSub(String path) {
+    StreamController controller = fluent._subs[path];
     if(controller == null) {
       controller = StreamController();
-      subs[path] = controller;
+      fluent._subs[path] = controller;
     }
 
     return controller.stream;
   }
 
-  
-  
+  void clearHx() => hx.clear();
+
 }
