@@ -4,40 +4,41 @@ import 'package:fluent/fluent.dart';
 
 void main() {
   test("Add event effect", () {
-    Fluent fluent = new Fluent();
+      Fluent.fluent.state.addIn("DeliveryPayment/User/SecondName", "Tortik");
+      
+      Fluent.regEffect("DeliveryPayment/User/NameChanged",
+        (state, [firstName, lastName]) {
+          // expect(state.getIn("DeliveryPayment/User/SecondName"), "Tortik");
+          expect(firstName, "Anton");
+          expect(lastName, "Buldakov");
+          return state..addIn("DeliveryPayment/User", {"LastName": lastName, "FirstName": firstName});
+      });
 
-    fluent.state.addIn("DeliveryPayment/User/Name", "Stas");
+      Fluent.regEffect("DeliveryPayment/User/SecondNameRemove",
+        (state, [haha, hah, h]) {
+          return state..removeIn("DeliveryPayment/User/SecondName");
+      });
 
-    fluent.regEffect(
-      "DeliveryPayment/User/NameChanged",
-      ["DeliveryPayment/User/Name"],
-      ([oldLastName, firstName, lastName]) {
-      expect(oldLastName, "Stas");
-      return {}..addIn("DeliveryPayment/User/Name", firstName);
+      Fluent.dispatch("DeliveryPayment/User/NameChanged", ["Anton", "Buldakov"]);
+      expect(Fluent.fluent.state.getIn("DeliveryPayment/User/FirstName"), "Anton");
+      expect(Fluent.fluent.state.getIn("DeliveryPayment/User/LastName"), "Buldakov");
+      expect(Fluent.fluent.state.getIn("DeliveryPayment/User/SecondName"), "Tortik");
+
+      Fluent.dispatch("DeliveryPayment/User/SecondNameRemove", []);
+      expect(Fluent.fluent.state.getIn("DeliveryPayment/User/SecondName"), null);
+  });
+
+  test("test stream with new vals", () async {
+    Fluent.fluent.state.addIn("Login/Username", "xamelon");
+
+    Fluent.regEffect("Login/UsernameChanged", (state, [username]) {
+      return state..addIn("Login/Username", username);
     });
 
-    expect(fluent.effects.containsKey("DeliveryPayment/User/NameChanged"), true);
-
-    fluent.dispatch("DeliveryPayment/User/NameChanged", ["Anton", "Buldakov"]);
-    expect(fluent.state.getIn("DeliveryPayment/User/Name"), "Anton");
-});
-
-test("test stream with new vals", () async {
-    Fluent fluent = new Fluent();
-
-    fluent.state.addIn("Login/Username", "xamelon");
-
-    fluent.regEffect(
-      "Login/UsernameChanged",
-      [],
-      ([username]) {
-        return {}..addIn("Login/Username", username);
-    });
-
-    Stream usernameSub = fluent.regSub("Login/Username");
+    Stream usernameSub = Fluent.regSub("Login/Username");
     expectLater(usernameSub, emitsInOrder(["xamelon", "xamelon96"]));
-    
-    fluent.dispatch("Login/UsernameChanged", ["xamelon"]);
-    fluent.dispatch("Login/UsernameChanged", ["xamelon96"]);
-});
+
+    Fluent.dispatch("Login/UsernameChanged", ["xamelon"]);
+    Fluent.dispatch("Login/UsernameChanged", ["xamelon96"]);
+  });
 }

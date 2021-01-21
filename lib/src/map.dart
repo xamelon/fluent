@@ -21,7 +21,11 @@ extension MapHelper on Map {
     //"momo/test"
     //[momo][test]
     Map rootMap = findMapInKey(path);
-    rootMap[paths.last] = value;
+    if(value is Map && rootMap[paths.last] is Map) {
+      rootMap[paths.last].addAll(value);
+    } else {
+      rootMap[paths.last] = value;
+    }
   }
 
   void removeIn(String path) {
@@ -63,16 +67,16 @@ extension MapHelper on Map {
 
   List<String> findAllPaths([String rootPath = null]) {
     List<String> allPaths = [];
-    
+
     this.forEach((k, v) {
-        String path = k;
-        if(rootPath != null) {
-          path = rootPath + "/" + k;
-        }
-        allPaths.add(path);
-        if(v is Map) {
-          allPaths.addAll(v.findAllPaths(k));
-        }
+      String path = k;
+      if (rootPath != null) {
+        path = rootPath + "/" + k;
+      }
+      allPaths.add(path);
+      if (v is Map) {
+        allPaths.addAll(v.findAllPaths(k));
+      }
     });
 
     return allPaths;

@@ -24,6 +24,12 @@ void main() {
       expect(someMap.getIn("test/momo"), 44);
       someMap.addIn("bb", 46);
       expect(someMap.getIn("bb"), 46);
+
+      someMap.addIn("bb", {"key": "value"});
+      expect(someMap.getIn("bb"), {"key": "value"});
+
+      someMap.addIn("bb", {"tortik": "cake"});
+      expect(someMap.getIn("bb"), {"key": "value", "tortik": "cake"});
   });
 
   test("remove in path", () {
