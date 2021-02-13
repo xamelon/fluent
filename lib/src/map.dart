@@ -21,7 +21,7 @@ extension MapHelper on Map {
     //"momo/test"
     //[momo][test]
     Map rootMap = findMapInKey(path);
-    if(value is Map && rootMap[paths.last] is Map) {
+    if (value is Map && rootMap[paths.last] is Map) {
       rootMap[paths.last].addAll(value);
     } else {
       rootMap[paths.last] = value;
@@ -80,5 +80,23 @@ extension MapHelper on Map {
     });
 
     return allPaths;
+  }
+
+  Map<String, dynamic> diff(Map<String, dynamic> other) {
+    Set<String> allPaths = Set.from(this.findAllPaths())
+      ..addAll(other.findAllPaths());
+
+    Map<String, dynamic> diff = {};
+
+    allPaths.forEach((path) {
+      var oldValue = this.getIn(path);
+      var newValue = other.getIn(path);
+      if (oldValue != newValue) {
+        diff.addIn(path + "/old", oldValue);
+        diff.addIn(path + "/new", newValue);
+      }
+    });
+
+    return diff;
   }
 }
