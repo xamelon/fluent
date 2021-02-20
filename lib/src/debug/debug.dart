@@ -4,13 +4,10 @@ import './map_view.dart';
 import 'package:fluent/fluent.dart';
 
 class FluentDebug extends StatefulWidget {
-
   State<FluentDebug> createState() => _FluentDebugState();
-  
 }
 
 class _FluentDebugState extends State<FluentDebug> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,5 +23,4 @@ class _FluentDebugState extends State<FluentDebug> {
       ),
     );
   }
-  
 }
